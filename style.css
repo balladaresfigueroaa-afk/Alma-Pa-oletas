@@ -1,0 +1,836 @@
+/* ============================================================
+   ALMA — hoja de estilos principal
+   Índice:
+   1. Variables y reset
+   2. Tipografía base
+   3. Utilidades de layout
+   4. Encabezado y navegación
+   5. Botones
+   6. Página de inicio (hero, colección, destacados, beneficios,
+      sobre nosotros, boletín) — usa CSS GRID como layout principal
+   7. Página productos (Bootstrap + estilos propios)
+   8. Página colección
+   9. Página nosotros
+   10. Página contacto — usa CSS GRID de dos columnas
+   11. Pie de página
+   12. Accesibilidad y responsive
+   ============================================================ */
+
+/* 1. Variables y reset ------------------------------------------- */
+:root {
+  --gold: #c69a44;
+  --gold-dark: #a87f34;
+  --ink: #1a1a1a;
+  --ink-soft: #333333;
+  --paper: #ffffff;
+  --sand: #f5f1e9;
+  --line: #e7e2d6;
+  --muted: #726b5e;
+  --coral: #d97757;
+
+  --font-display: "Playfair Display", "Georgia", serif;
+  --font-body: "Poppins", "Segoe UI", sans-serif;
+
+  --container: 1180px;
+  --radius-lg: 22px;
+  --radius: 10px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink-soft);
+  font-family: var(--font-body);
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+a {
+  color: inherit;
+}
+
+ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* 2. Tipografía base ------------------------------------------------ */
+h1, h2, h3 {
+  font-family: var(--font-display);
+  color: var(--ink);
+  margin: 0 0 0.5em;
+  line-height: 1.15;
+}
+
+h1 { font-size: clamp(2rem, 3.4vw + 1rem, 3.1rem); font-weight: 700; }
+h2 { font-size: clamp(1.5rem, 2vw + 1rem, 2.1rem); font-weight: 700; }
+h3 { font-size: 1.1rem; font-weight: 600; }
+
+p {
+  margin: 0 0 1em;
+  max-width: 60ch;
+  color: var(--muted);
+}
+
+.center { text-align: center; }
+.center p { margin-left: auto; margin-right: auto; }
+
+/* 3. Utilidades de layout -------------------------------------------- */
+.container {
+  width: 100%;
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: 0 28px;
+}
+
+.section { padding: 64px 0; }
+.section-tight { padding: 40px 0; }
+
+/* 4. Encabezado y navegación ------------------------------------------ */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  background: var(--paper);
+  border-bottom: 1px solid var(--line);
+}
+
+.site-header .container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding-top: 18px;
+  padding-bottom: 18px;
+  flex-wrap: wrap;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-display);
+  font-size: 1.7rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--gold);
+  text-decoration: none;
+}
+
+.brand img {
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
+}
+
+.main-nav ul {
+  display: flex;
+  gap: 34px;
+  flex-wrap: wrap;
+}
+
+.main-nav a {
+  text-decoration: none;
+  font-weight: 500;
+  color: var(--ink);
+  padding-bottom: 4px;
+  border-bottom: 2px solid transparent;
+}
+
+.main-nav a:hover,
+.main-nav a[aria-current="page"] {
+  border-bottom-color: var(--gold);
+}
+
+.header-icons {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.header-icons a {
+  display: inline-flex;
+}
+
+.header-icons .icon {
+  width: 21px;
+  height: 21px;
+}
+
+/* 5. Botones ------------------------------------------------------------ */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 13px 28px;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-decoration: none;
+  border: 1.5px solid transparent;
+  cursor: pointer;
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.btn:hover { transform: translateY(-1px); }
+
+.btn-white {
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.btn-dark {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.btn-dark:hover { background: #000; }
+
+.btn-gold {
+  background: var(--gold);
+  color: var(--paper);
+}
+
+.btn-gold:hover { background: var(--gold-dark); }
+
+.btn-outline {
+  background: transparent;
+  border-color: var(--ink);
+  color: var(--ink);
+}
+
+.icon {
+  width: 20px;
+  height: 20px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* 6. Página de inicio ----------------------------------------------- */
+/* .home-grid es el layout principal de index.html construido con
+   CSS Grid: cada sección ocupa una fila con su propia área. */
+.home-grid {
+  display: grid;
+  grid-template-areas:
+    "hero"
+    "collection"
+    "featured"
+    "benefits"
+    "about"
+    "newsletter";
+}
+
+.hero { grid-area: hero; padding: 40px 0 0; }
+
+.hero-frame {
+  position: relative;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: var(--sand);
+}
+
+.hero-frame img { width: 100%; height: auto; }
+
+.hero-frame .float-btn {
+  position: absolute;
+  left: 50%;
+  bottom: 26px;
+  transform: translateX(-50%);
+}
+
+.collection { grid-area: collection; padding-top: 40px; }
+
+.collection-frame {
+  position: relative;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  min-height: 380px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.collection-frame img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+}
+
+.collection-frame::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(10, 10, 10, 0.42);
+  z-index: 1;
+}
+
+.collection-content {
+  position: relative;
+  z-index: 2;
+  color: #fff;
+}
+
+.collection-content h2 {
+  color: #fff;
+  font-size: clamp(2.2rem, 5vw, 4rem);
+  font-weight: 900;
+  letter-spacing: 0.02em;
+  margin-bottom: 24px;
+}
+
+.featured { grid-area: featured; }
+
+.featured-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.arrow-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1.5px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  color: var(--ink);
+  flex-shrink: 0;
+}
+
+.arrow-btn:hover { border-color: var(--gold); color: var(--gold); }
+
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 22px;
+  margin-top: 30px;
+}
+
+.product-card {
+  position: relative;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 14px;
+}
+
+.product-card .fav {
+  position: absolute;
+  top: 22px;
+  right: 22px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--paper);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+  z-index: 2;
+}
+
+.product-card .fav .icon { width: 15px; height: 15px; }
+
+.product-card img {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border-radius: 6px;
+  margin-bottom: 14px;
+  background: var(--sand);
+}
+
+.product-card h3 { margin-bottom: 4px; }
+
+.product-card p { font-size: 0.88rem; margin-bottom: 12px; }
+
+.product-card .price {
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 12px;
+  display: block;
+}
+
+.product-card .btn { width: 100%; justify-content: center; }
+
+.benefits { grid-area: benefits; }
+
+.benefits-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px;
+  text-align: center;
+}
+
+.benefits-grid .icon-wrap {
+  width: 48px;
+  height: 48px;
+  margin: 0 auto 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.benefits-grid p { margin: 0 auto; font-size: 0.92rem; }
+
+.about-banner { grid-area: about; }
+
+.about-frame {
+  position: relative;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  min-height: 260px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.about-frame img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.about-frame .btn { position: relative; z-index: 2; margin-bottom: 26px; }
+
+.newsletter { grid-area: newsletter; text-align: center; }
+
+.divider-line {
+  width: 220px;
+  height: 2px;
+  margin: 0 auto 40px;
+  background: linear-gradient(90deg, transparent, var(--coral), transparent);
+}
+
+.newsletter-form {
+  display: flex;
+  gap: 12px;
+  max-width: 440px;
+  margin: 28px auto 0;
+}
+
+.newsletter-form input {
+  flex: 1;
+  padding: 13px 18px;
+  border-radius: 999px;
+  border: 1.5px solid var(--line);
+  background: var(--sand);
+  font-family: var(--font-body);
+}
+
+/* 7. Página productos — Bootstrap + estilos propios --------------------- */
+/* style.css se carga después de bootstrap, así que estas reglas
+   ganan y adaptan las tarjetas de Bootstrap a la marca ALMA. */
+.page-head {
+  text-align: center;
+  padding: 56px 0 10px;
+}
+
+.filter-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin: 24px 0 8px;
+}
+
+.filter-row .chip {
+  background: var(--sand);
+  padding: 8px 18px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.scarf-card.card {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  position: relative;
+  height: 100%;
+}
+
+.scarf-card .card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.scarf-card img.card-img-top {
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  background: var(--sand);
+}
+
+.scarf-card .price {
+  font-weight: 700;
+  color: var(--ink);
+  margin: 4px 0 10px;
+}
+
+.scarf-card .btn-primary {
+  background-color: var(--gold);
+  border-color: var(--gold);
+}
+
+.scarf-card .btn-primary:hover {
+  background-color: var(--gold-dark);
+  border-color: var(--gold-dark);
+}
+
+.scarf-card .fav {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+}
+
+.scarf-card .fav .icon { width: 15px; height: 15px; }
+
+/* 8. Página colección ------------------------------------------------- */
+.collections-list {
+  display: grid;
+  gap: 26px;
+  margin-top: 30px;
+}
+
+.collection-row {
+  position: relative;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  min-height: 300px;
+  display: flex;
+  align-items: center;
+}
+
+.collection-row img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.collection-row::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(10,10,10,0.55), rgba(10,10,10,0.05));
+}
+
+.collection-row .row-copy {
+  position: relative;
+  z-index: 2;
+  color: #fff;
+  padding: 42px 48px;
+  max-width: 440px;
+}
+
+.collection-row .row-copy h2 { color: #fff; }
+.collection-row .row-copy p { color: rgba(255,255,255,0.85); }
+
+/* 9. Página nosotros ---------------------------------------------------- */
+.story-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 52px;
+  align-items: center;
+}
+
+.story-grid img { border-radius: var(--radius-lg); }
+
+.values-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 26px;
+  margin-top: 34px;
+}
+
+.value-card {
+  background: var(--sand);
+  border-radius: var(--radius);
+  padding: 24px;
+}
+
+.timeline {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 22px;
+  margin-top: 34px;
+  counter-reset: tl;
+}
+
+.timeline li {
+  border-top: 2px solid var(--line);
+  padding-top: 12px;
+}
+
+.timeline li::before {
+  counter-increment: tl;
+  content: counter(tl);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--gold);
+  color: #fff;
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  margin-bottom: 10px;
+}
+
+/* 10. Página contacto — CSS GRID de dos columnas ------------------------ */
+.contact-grid {
+  display: grid;
+  grid-template-columns: 0.9fr 1.1fr;
+  gap: 56px;
+  align-items: start;
+}
+
+.contact-info li {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  margin-bottom: 18px;
+}
+
+.contact-info .icon { color: var(--gold-dark); margin-top: 3px; }
+
+.social-row { display: flex; gap: 12px; margin-top: 22px; }
+
+.social-row a {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--ink);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
+
+.contact-form {
+  background: var(--sand);
+  padding: 32px;
+  border-radius: var(--radius-lg);
+}
+
+.field { margin-bottom: 18px; }
+
+.field label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 6px;
+  font-size: 0.9rem;
+  color: var(--ink);
+}
+
+.field input,
+.field textarea {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1.5px solid var(--line);
+  border-radius: 8px;
+  font-family: var(--font-body);
+  font-size: 1rem;
+  background: #fff;
+}
+
+.field textarea { min-height: 130px; resize: vertical; }
+
+/* 11. Pie de página ------------------------------------------------------ */
+.site-footer {
+  background: var(--ink);
+  color: #efe9dd;
+  padding: 56px 0 24px;
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr 1fr 1fr;
+  gap: 36px;
+}
+
+.footer-grid .brand { color: var(--gold); display: inline-flex; margin-bottom: 10px; }
+
+.footer-grid h3 {
+  color: #fff;
+  font-size: 0.95rem;
+  margin-bottom: 14px;
+}
+
+.footer-grid ul { display: grid; gap: 10px; }
+
+.footer-grid a {
+  text-decoration: none;
+  color: rgba(239, 233, 221, 0.8);
+  font-size: 0.92rem;
+}
+
+.footer-grid a:hover { color: #fff; }
+
+.footer-social { display: flex; gap: 12px; }
+
+.footer-social a {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.footer-bottom {
+  margin-top: 40px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255,255,255,0.12);
+  font-size: 0.82rem;
+  color: rgba(239,233,221,0.55);
+}
+
+/* 12. Accesibilidad y responsive ------------------------------------------ */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid var(--gold);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; }
+}
+
+@media (max-width: 900px) {
+  .product-grid { grid-template-columns: repeat(2, 1fr); }
+  .benefits-grid { grid-template-columns: 1fr; }
+  .story-grid, .contact-grid { grid-template-columns: 1fr; }
+  .timeline { grid-template-columns: repeat(2, 1fr); }
+  .footer-grid { grid-template-columns: 1fr 1fr; }
+  .values-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 600px) {
+  .product-grid { grid-template-columns: 1fr; }
+  .timeline { grid-template-columns: 1fr; }
+  .footer-grid { grid-template-columns: 1fr; }
+  .newsletter-form { flex-direction: column; }
+  .main-nav ul { gap: 16px 22px; }
+}
+
+
+/* ============================================================
+   13. Integración con Bootstrap 5
+   Bootstrap aporta el navbar responsive, utilidades, formularios
+   y comportamiento del menú hamburguesa. Este CSS conserva la
+   identidad visual propia de ALMA.
+   ============================================================ */
+
+.navbar {
+  padding: 0;
+}
+
+.navbar .container {
+  padding-top: 18px;
+  padding-bottom: 18px;
+}
+
+.navbar-brand {
+  margin-right: 1rem;
+}
+
+.navbar-nav {
+  gap: 18px;
+}
+
+.navbar-nav .nav-link {
+  color: var(--ink);
+  font-weight: 500;
+  padding-left: 8px;
+  padding-right: 8px;
+  border-bottom: 2px solid transparent;
+}
+
+.navbar-nav .nav-link:hover,
+.navbar-nav .nav-link:focus,
+.navbar-nav .nav-link.active {
+  color: var(--ink);
+  border-bottom-color: var(--gold);
+}
+
+.navbar-toggler {
+  border-color: var(--line);
+}
+
+.navbar-toggler:focus {
+  box-shadow: 0 0 0 .2rem rgba(198, 154, 68, .2);
+}
+
+.form-control,
+.form-select {
+  border-color: var(--line);
+  border-radius: var(--radius);
+  font-family: var(--font-body);
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 .2rem rgba(198, 154, 68, .18);
+}
+
+/* Bootstrap usa .btn; estas reglas aseguran que el estilo ALMA
+   siga teniendo prioridad sobre los valores por defecto. */
+.btn {
+  --bs-btn-border-radius: 999px;
+  --bs-btn-font-weight: 600;
+}
+
+@media (max-width: 991.98px) {
+  .navbar-collapse {
+    padding-top: 16px;
+    padding-bottom: 6px;
+  }
+
+  .navbar-nav {
+    gap: 2px;
+    text-align: center;
+  }
+
+  .navbar-nav .nav-link {
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
+}
